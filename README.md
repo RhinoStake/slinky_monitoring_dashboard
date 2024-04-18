@@ -41,8 +41,6 @@ This is a work-in-progress Grafana dashboard for monitoring the [Slinky Oracle](
 - Click Upload JSON and select the file downloaded
 - Select your Prometheus datasource from the dropdown & import!
 
-![grafana import](https://grabup.teamhim.com/tabescence-jamshid-tiou-stinkier.png?raw-true)
-
 Have ideas/changes/additions? Great! Feel free to push a PR to this repo or reach out to [me on Discord](https://discord.gg/SGhQzj5tyz)!
 
 ## Who is RHINO?
