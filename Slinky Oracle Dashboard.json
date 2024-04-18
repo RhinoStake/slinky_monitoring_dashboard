@@ -134,7 +134,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "cometbft_consensus_latest_block_height{chain_id=\"${chain_id}\"}",
+          "expr": "cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -200,7 +200,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(cometbft_consensus_latest_block_height{chain_id=\"${chain_id}\"}[5m])",
+          "expr": "rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m])",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -266,7 +266,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "1 / (rate(cometbft_consensus_latest_block_height{chain_id=\"${chain_id}\"}[5m]))",
+          "expr": "1 / (rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m]))",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -753,7 +753,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (ticker) (app_prices{chain_id=\"${chain_id}\"})",
+          "expr": "count by (ticker) (app_prices{job=\"${job}\",chain_id=\"${chain_id}\"})",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -824,7 +824,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(app_oracle_responses{chain_id=\"${chain_id}\"}[1m])",
+          "expr": "rate(app_oracle_responses{job=\"${job}\",chain_id=\"${chain_id}\"}[1m])",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -3300,6 +3300,6 @@
   "timezone": "",
   "title": "Slinky Oracle Dashboard",
   "uid": "cdca49ue665moc",
-  "version": 96,
+  "version": 97,
   "weekStart": ""
 }
