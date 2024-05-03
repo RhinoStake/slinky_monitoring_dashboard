@@ -12,10 +12,16 @@
   "__elements": {},
   "__requires": [
     {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.4.0"
+      "version": "10.4.2"
     },
     {
       "type": "panel",
@@ -33,6 +39,12 @@
       "type": "panel",
       "id": "stat",
       "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
       "version": ""
     },
     {
@@ -126,7 +138,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -192,7 +204,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -258,7 +270,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -325,7 +337,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -394,7 +406,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -476,7 +488,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -599,7 +611,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -607,11 +619,12 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "exemplar": true,
-          "expr": "cometbft_consensus_state_syncing{job=\"${job}\"}",
+          "exemplar": false,
+          "expr": "cometbft_blocksync_syncing{job=\"${job}\",chain_id=\"${chain_id}\"}",
+          "instant": true,
           "interval": "",
-          "legendFormat": "{{instance}}",
-          "range": true,
+          "legendFormat": "__auto",
+          "range": false,
           "refId": "A"
         }
       ],
@@ -623,7 +636,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "The percent of requests from blockchain binary to the side car that are successful.",
+      "description": "Successful app oracle responses as a percent of total in range",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -653,7 +666,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
+        "w": 4,
         "x": 0,
         "y": 4
       },
@@ -674,7 +687,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -690,7 +703,97 @@
           "refId": "B"
         }
       ],
-      "title": "Side Car Response % in Range",
+      "title": "On-Chain Success % in Range",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Number of ticker pairs your node is failing with no prices reported in 15 minutes",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "ALL REPORTING"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "orange",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 4
+      },
+      "id": 104,
+      "options": {
+        "colorMode": "background_solid",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count by (status) (rate(app_report_status_per_validator{job=\"${job}\",status=\"with_price\"}[15m]) == 0) ",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Tickers Failing",
       "type": "stat"
     },
     {
@@ -704,7 +807,18 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "index": 1,
+                  "text": "NO PRICES REPORTING"
+                }
+              },
+              "type": "special"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -723,8 +837,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 5,
+        "w": 3,
+        "x": 8,
         "y": 4
       },
       "id": 40,
@@ -744,7 +858,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -795,8 +909,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 9,
+        "w": 3,
+        "x": 11,
         "y": 4
       },
       "id": 37,
@@ -816,7 +930,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -831,7 +945,7 @@
           "refId": "A"
         }
       ],
-      "title": "App Oracle Responses / sec",
+      "title": "On Chain Responses / sec",
       "type": "stat"
     },
     {
@@ -839,21 +953,20 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Number of price pairs with a failure rate > 25% by provider",
+      "description": "Number of price pairs with no prices reported in 30 minutes",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 2,
           "mappings": [
             {
               "options": {
                 "match": "null",
                 "result": {
                   "color": "green",
-                  "index": 0,
-                  "text": "NONE"
+                  "index": 1,
+                  "text": "ALL REPORTING"
                 }
               },
               "type": "special"
@@ -863,26 +976,37 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
+                "color": "green",
                 "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 9
               }
             ]
-          },
-          "unit": "locale"
+          }
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 13,
+        "x": 14,
         "y": 4
       },
-      "id": 52,
+      "id": 72,
       "options": {
         "colorMode": "background_solid",
-        "graphMode": "none",
-        "justifyMode": "center",
+        "graphMode": "area",
+        "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -895,7 +1019,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -904,14 +1028,14 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (provider) ((sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\",internal_status=\"success\"}[15m]))) / (sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\"}[15m]))) < .75)",
-          "instant": false,
-          "legendFormat": "{{provider}}",
-          "range": true,
+          "expr": "count by (status) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[30m]) == 0)",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
           "refId": "A"
         }
       ],
-      "title": "Failing Price Feeds by Provider",
+      "title": "Side Car Price Pairs Failing",
       "type": "stat"
     },
     {
@@ -941,8 +1065,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 17,
+        "w": 3,
+        "x": 18,
         "y": 4
       },
       "id": 31,
@@ -963,7 +1087,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1045,7 +1169,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1168,8 +1292,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 14,
+        "h": 10,
+        "w": 24,
         "x": 0,
         "y": 9
       },
@@ -1198,14 +1322,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "app_prices{chain_id=\"${chain_id}\",ticker=\"${ticker}\"} / 10^8",
+          "expr": "app_prices{job=~\"${job}\",chain_id=\"${chain_id}\",ticker=\"${ticker}\"} / 10^18",
           "instant": false,
           "legendFormat": "{{ticker}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Reported Price by Ticker (USD)  - Filter Above",
+      "title": "On-Chain Price by Ticker (USD)  - Filter Above",
       "type": "timeseries"
     },
     {
@@ -1213,74 +1337,69 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Success of submitting price for ticker per block time",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          }
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "displayName": "${ticker}",
+          "fieldMinMax": false,
+          "mappings": [],
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percentunit"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^with_price.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 10,
-        "x": 14,
-        "y": 9
+        "h": 12,
+        "w": 13,
+        "x": 0,
+        "y": 19
       },
-      "id": 38,
+      "id": 88,
       "options": {
-        "calculate": true,
-        "calculation": {
-          "xBuckets": {
-            "mode": "size"
-          },
-          "yBuckets": {
-            "scale": {
-              "type": "linear"
-            }
-          }
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
-        "cellGap": 1,
-        "color": {
-          "exponent": 0.5,
-          "fill": "dark-orange",
-          "mode": "scheme",
-          "reverse": false,
-          "scale": "exponential",
-          "scheme": "Oranges",
-          "steps": 64
-        },
-        "exemplars": {
-          "color": "rgba(255,0,255,0.7)"
-        },
-        "filterValues": {
-          "le": 1e-9
-        },
-        "legend": {
-          "show": true
-        },
-        "rowsFrame": {
-          "layout": "auto"
-        },
-        "tooltip": {
-          "mode": "single",
-          "showColorScale": false,
-          "yHistogram": false
-        },
-        "yAxis": {
-          "axisPlacement": "left",
-          "reverse": false,
-          "unit": "s"
-        }
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "10.4.0",
+      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -1288,15 +1407,144 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(app_oracle_response_latency_bucket{job=~\"${job}\"}[$__rate_interval])) by (le)",
+          "expr": "(rate(app_report_status_per_validator{job=~\"${job}\",chain_id=\"${chain_id}\",ticker=\"${ticker}\",validator=\"${valscon}\"}[15m])) / on(chain_id) group_right(status,ticker) (rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[15m]))",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{status}} - {{ticker}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Oracle Latency to Blockchain (s)",
-      "type": "heatmap"
+      "title": "App Report Status for ${valscon}",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Your validator address is bolded",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 36,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 11,
+        "x": 13,
+        "y": 19
+      },
+      "id": 120,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "app_reports_per_validator{job=\"${job}\",chain_id=\"${chain_id}\",ticker=~\"${ticker}\",validator!=\"${valscon}\"} / 10^18",
+          "instant": false,
+          "legendFormat": "{{validator}} - {{ticker}}",
+          "range": true,
+          "refId": "AllVals"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "app_reports_per_validator{job=\"${job}\",chain_id=\"${chain_id}\",ticker=~\"${ticker}\",validator=\"${valscon}\"} / 10^18",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{validator}} - {{ticker}}",
+          "range": true,
+          "refId": "YourValidator"
+        }
+      ],
+      "title": "Validator Reported Prices for Ticker vs all Vals - filter by Reported Ticker and Val Address",
+      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -1304,11 +1552,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 31
       },
       "id": 44,
       "panels": [],
-      "title": "Side Car Aggregated Prices",
+      "title": "Side Car Aggregated Prices Reported to Chain",
       "type": "row"
     },
     {
@@ -1373,10 +1621,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 24,
+        "h": 11,
+        "w": 18,
         "x": 0,
-        "y": 18
+        "y": 32
       },
       "id": 45,
       "options": {
@@ -1403,10 +1651,350 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "side_car_aggregated_price{job=\"${job}\",id=~\"${id}\",decimals=\"8\"} / 10^8 ",
+          "expr": "side_car_aggregated_price{job=\"${job}\",id=~\"${id}\"}",
           "hide": false,
           "instant": false,
           "legendFormat": "{{id}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Side Car Aggregated Price Pair - Filter Above",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 6,
+        "x": 18,
+        "y": 32
+      },
+      "id": 38,
+      "options": {
+        "calculate": true,
+        "calculation": {
+          "xBuckets": {
+            "mode": "size"
+          },
+          "yBuckets": {
+            "scale": {
+              "type": "linear"
+            }
+          }
+        },
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Oranges",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false,
+          "unit": "s"
+        }
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(app_oracle_response_latency_bucket{job=~\"${job}\",chain_id=\"${chain_id}\"}[$__rate_interval])) by (le)",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Side Car Latency to Blockchain (s)",
+      "type": "heatmap"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 43
+      },
+      "id": 47,
+      "panels": [],
+      "title": "Side Car Provider Health",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Price Feeds with no data in 30 minutes",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "green",
+                  "index": 0,
+                  "text": "NONE"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 7,
+        "x": 0,
+        "y": 44
+      },
+      "id": 52,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": [],
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "Provider"
+          }
+        ]
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (provider,id) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[30m])) == 0",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Failing Price Feeds by Provider",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Time": "",
+              "id": "Side Car Price Pair",
+              "provider": "Provider"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Bold line is on-chain price, thin lines are provider reported prices for pair. Filter via Side Car Price Pair",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.9
+              },
+              {
+                "color": "green",
+                "value": 0.99
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^On Chain.*/"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 17,
+        "x": 7,
+        "y": 44
+      },
+      "id": 48,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "side_car_provider_price{job=\"${job}\",id=~\"${id}\",provider=~\"${provider}\"}",
+          "instant": false,
+          "legendFormat": "{{id}} - {{provider}}",
           "range": true,
           "refId": "A"
         },
@@ -1416,42 +2004,16 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "side_car_aggregated_price{job=\"${job}\",id=~\"${id}\",decimals=\"10\"} / 10^10",
+          "expr": "app_prices{job=\"${job}\",ticker=~\"${id}\"} / 10^18",
           "hide": false,
           "instant": false,
-          "legendFormat": "{{id}}",
-          "range": true,
-          "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "side_car_aggregated_price{job=\"${job}\",id=~\"${id}\",decimals=\"18\"} / 10^18",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "{{id}}",
+          "legendFormat": "On Chain Price - {{ticker}}",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "Side Car Aggregated Price Pair - Filter Above",
+      "title": "Side Car Provider Price vs On Chain Price - Filter by id and provider above ",
       "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 28
-      },
-      "id": 47,
-      "panels": [],
-      "title": "Side Car Provider Health",
-      "type": "row"
     },
     {
       "datasource": {
@@ -1471,7 +2033,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               },
               {
                 "color": "orange",
@@ -1491,7 +2054,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 29
+        "y": 55
       },
       "id": 49,
       "options": {
@@ -1519,7 +2082,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(sum by (provider) (increase(side_car_api_http_status_code{job=\"${job}\",status_code=\"2XX\" }[$__range]))) / (sum by (provider) (increase(side_car_api_http_status_code{job=\"${job}\"}[$__range])))",
+          "expr": "sum by (provider) (increase(side_car_api_http_status_code{job=\"${job}\",status_code=\"2XX\"}[$__range])) / sum by (provider) (increase(side_car_api_http_status_code{job=\"${job}\"}[$__range]))",
           "instant": true,
           "legendFormat": "{{provider}}",
           "range": false,
@@ -1578,7 +2141,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1668,9 +2232,9 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 9,
+        "w": 18,
         "x": 6,
-        "y": 29
+        "y": 55
       },
       "id": 46,
       "options": {
@@ -1684,383 +2248,6 @@
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\",provider=~\"${provider}\"}[2m])) by (status_code,provider)",
-          "instant": false,
-          "legendFormat": "{{provider}} - {{status_code}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Data Provider HTTP Status Code / sec - Filter Above",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Requests / sec",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 31,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 2,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "locale"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*1.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*2.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*3.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*4.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*5.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 9,
-        "x": 15,
-        "y": 29
-      },
-      "id": 50,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\",provider=~\"${provider}\"}[2m])) by (status_code,provider)",
-          "instant": false,
-          "legendFormat": "{{provider}} - {{status_code}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Data Provider HTTP Status Code / sec - Filter Above",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 2,
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "color": "green",
-                  "index": 0,
-                  "text": "NONE"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "max": 1,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              },
-              {
-                "color": "orange",
-                "value": 0.9
-              },
-              {
-                "color": "green",
-                "value": 0.99
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 5,
-        "x": 0,
-        "y": 37
-      },
-      "id": 51,
-      "options": {
-        "colorMode": "background_solid",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "(sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\",internal_status=\"success\"}[15m]))) / (sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\"}[15m]))) < .75",
-          "instant": true,
-          "legendFormat": "{{id}} - {{provider}}",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Price Pair Requests Currently Failing > 25%",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 4,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 2,
-          "mappings": [],
-          "max": 1,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              },
-              {
-                "color": "orange",
-                "value": 0.9
-              },
-              {
-                "color": "green",
-                "value": 0.99
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 19,
-        "x": 5,
-        "y": 37
-      },
-      "id": 48,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
           "sortBy": "Last *",
           "sortDesc": true
         },
@@ -2069,7 +2256,6 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "10.4.2",
       "targets": [
         {
           "datasource": {
@@ -2077,124 +2263,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\",id=~\"${id}\",provider=~\"${provider}\",internal_status=\"success\"}[$__range]))) / (sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\",id=~\"${id}\",provider=~\"${provider}\",}[$__range])))",
+          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\",provider=~\"${provider}\"}[$__rate_interval])) by (status_code,provider)",
           "instant": false,
-          "legendFormat": "{{id}} - {{provider}}",
+          "legendFormat": "{{provider}} - {{status_code}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Data Provider Request Success % by Price Pair and Provider - Filter Above",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 4,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 2,
-          "mappings": [],
-          "max": 1,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              },
-              {
-                "color": "orange",
-                "value": 0.9
-              },
-              {
-                "color": "green",
-                "value": 0.99
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 46
-      },
-      "id": 53,
-      "options": {
-        "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Last *",
-          "sortDesc": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.4.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "(sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\",id=~\"${id}\",provider=~\"${provider}\",internal_status=\"success\"}[$__range]))) / (sum by (provider,id) (increase(side_car_api_response_internal_status{job=\"${job}\",id=~\"${id}\",provider=~\"${provider}\",}[$__range])))",
-          "instant": false,
-          "legendFormat": "{{id}} - {{provider}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Data Provider Request Success % by Price Pair and Provider - Filter Above",
+      "title": "Data Provider HTTP Status Code / sec - Filter Above",
       "type": "timeseries"
     },
     {
@@ -2203,7 +2279,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 63
       },
       "id": 25,
       "panels": [],
@@ -2259,7 +2335,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2275,7 +2352,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 57
+        "y": 64
       },
       "id": 26,
       "options": {
@@ -2361,7 +2438,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2377,7 +2455,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 57
+        "y": 64
       },
       "id": 39,
       "options": {
@@ -2461,7 +2539,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2477,7 +2556,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 64
+        "y": 71
       },
       "id": 14,
       "options": {
@@ -2563,7 +2642,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2579,7 +2659,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 64
+        "y": 71
       },
       "id": 35,
       "options": {
@@ -2663,7 +2743,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2678,7 +2759,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 72
+        "y": 79
       },
       "id": 11,
       "options": {
@@ -2702,7 +2783,7 @@
           "editorMode": "code",
           "expr": "cometbft_p2p_peers{job=\"$job\"}",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Peers - {{instance}}",
           "range": true,
           "refId": "A"
         }
@@ -2724,7 +2805,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "Txs",
+            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
@@ -2757,25 +2838,25 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
                 "value": 80
               }
             ]
-          },
-          "unit": "locale"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 12,
         "x": 12,
-        "y": 72
+        "y": 79
       },
-      "id": 16,
+      "id": 17,
       "options": {
         "legend": {
           "calcs": [],
@@ -2795,14 +2876,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "cometbft_mempool_size{job=\"${job}\",chain_id=\"${chain_id}\"}",
+          "expr": "cometbft_consensus_num_txs{job=\"${job}\"}",
           "instant": false,
-          "legendFormat": "Mempool",
+          "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Mempool Size",
+      "title": "Txs/block",
       "type": "timeseries"
     },
     {
@@ -2853,7 +2934,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2869,7 +2951,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 77
+        "y": 84
       },
       "id": 15,
       "options": {
@@ -2915,7 +2997,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "Txs",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
@@ -2948,24 +3030,26 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "locale"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 7,
         "w": 12,
         "x": 12,
-        "y": 79
+        "y": 85
       },
-      "id": 17,
+      "id": 16,
       "options": {
         "legend": {
           "calcs": [],
@@ -2985,14 +3069,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "cometbft_consensus_num_txs{job=\"${job}\"}",
+          "expr": "cometbft_mempool_size{job=\"${job}\",chain_id=\"${chain_id}\"}",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "Mempool",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Txs/block",
+      "title": "Mempool Size",
       "type": "timeseries"
     },
     {
@@ -3001,7 +3085,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 85
+        "y": 92
       },
       "id": 55,
       "panels": [],
@@ -3059,7 +3143,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3073,9 +3158,9 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 24,
+        "w": 12,
         "x": 0,
-        "y": 86
+        "y": 93
       },
       "id": 56,
       "maxPerRow": 2,
@@ -3096,7 +3181,7 @@
           "sort": "none"
         }
       },
-      "repeat": "provider_detailed",
+      "repeat": "provider",
       "repeatDirection": "h",
       "targets": [
         {
@@ -3105,7 +3190,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum by (provider,id,type) (increase(side_car_provider_status_responses_per_id{job=\"${job}\",id=~\"${id}\",provider=~\"${provider_detailed}\",status=\"success\"}[$__range]))) / (sum by (provider,id,type) (increase(side_car_provider_status_responses_per_id{job=\"${job}\",id=~\"${id}\",provider=~\"${provider_detailed}\",}[$__range])))",
+          "expr": "(sum by (provider,id,type) (increase(side_car_provider_status_responses_per_id{job=\"${job}\",provider=~\"${provider}\",status=\"success\"}[5m]))) / (sum by (provider,id,type) (increase(side_car_provider_status_responses_per_id{job=\"${job}\",provider=~\"${provider}\",}[5m])))",
           "hide": false,
           "instant": false,
           "legendFormat": "{{id}} - {{type}}",
@@ -3113,7 +3198,7 @@
           "refId": "B"
         }
       ],
-      "title": "Detailed Data for ${provider_detailed} Request Success % by Price Pair, Provider and Route - Filter Above",
+      "title": "Detailed Data for ${provider} - Request Success % by Price Pair, Provider and Route",
       "type": "timeseries"
     }
   ],
@@ -3123,31 +3208,12 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": true,
-          "text": "default",
-          "value": "default"
-        },
-        "hide": 0,
-        "includeAll": false,
-        "label": "datasource",
-        "multi": false,
-        "name": "DS_PROMETHEUS",
-        "options": [],
-        "query": "prometheus",
-        "queryValue": "",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "type": "datasource"
-      },
-      {
         "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(up,job)",
+        "definition": "label_values(side_car_api_http_status_code,job)",
         "hide": 0,
         "includeAll": false,
         "label": "Job",
@@ -3156,7 +3222,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(up,job)",
+          "query": "label_values(side_car_api_http_status_code,job)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -3195,7 +3261,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(app_prices,ticker)",
+        "definition": "label_values(app_prices{chain_id=\"$chain_id\"},ticker)",
         "hide": 0,
         "includeAll": true,
         "label": "Reported Ticker",
@@ -3204,10 +3270,10 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(app_prices,ticker)",
+          "query": "label_values(app_prices{chain_id=\"$chain_id\"},ticker)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -3219,7 +3285,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_aggregated_price,id)",
+        "definition": "label_values(side_car_aggregated_price{job=\"$job\"},id)",
         "hide": 0,
         "includeAll": true,
         "label": "Side Car Price Pair",
@@ -3228,10 +3294,10 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_aggregated_price,id)",
+          "query": "label_values(side_car_aggregated_price{job=\"$job\"},id)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
@@ -3244,7 +3310,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_api_http_status_code,provider)",
+        "definition": "label_values(side_car_provider_price{job=~\"$job\"},provider)",
         "hide": 0,
         "includeAll": true,
         "label": "Data Provider",
@@ -3253,44 +3319,44 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_api_http_status_code,provider)",
+          "query": "label_values(side_car_provider_price{job=~\"$job\"},provider)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
         "type": "query"
       },
       {
-        "allValue": "",
         "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_provider_status_responses_per_id,provider)",
-        "hide": 2,
-        "includeAll": true,
-        "label": "provider_detailed",
+        "definition": "label_values(app_report_status_per_validator{job=\"$job\"},validator)",
+        "description": "Set to your validator address",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Validator Address",
         "multi": false,
-        "name": "provider_detailed",
+        "name": "valscon",
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_provider_status_responses_per_id,provider)",
+          "query": "label_values(app_report_status_per_validator{job=\"$job\"},validator)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 1,
+        "sort": 2,
         "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -3304,6 +3370,6 @@
   "timezone": "",
   "title": "Slinky Oracle Dashboard",
   "uid": "cdca49ue665moc",
-  "version": 6,
+  "version": 125,
   "weekStart": ""
 }
