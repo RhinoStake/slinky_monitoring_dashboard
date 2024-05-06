@@ -953,7 +953,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Number of price pairs with no prices reported in 15 minutes",
+      "description": "Number of price pairs with no prices reported in 30 minutes",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1028,7 +1028,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (status) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[15m]) == 0)",
+          "expr": "count by (status) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[30m]) == 0)",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -1801,8 +1801,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           },
@@ -1922,8 +1921,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "orange",
@@ -2034,8 +2032,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "orange",
@@ -2142,8 +2139,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2260,8 +2256,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2363,8 +2358,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2464,8 +2458,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2567,8 +2560,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2668,8 +2660,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2763,8 +2754,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2859,8 +2849,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2955,8 +2944,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3068,8 +3056,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3132,6 +3119,24 @@
   "tags": [],
   "templating": {
     "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "VZT5-Dv7z"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "label": "data source",
+        "multi": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
       {
         "current": {},
         "datasource": {
@@ -3295,6 +3300,6 @@
   "timezone": "",
   "title": "Slinky Oracle Dashboard",
   "uid": "cdca49ue665moc",
-  "version": 130,
+  "version": 131,
   "weekStart": ""
 }
