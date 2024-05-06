@@ -953,7 +953,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Number of price pairs with no prices reported in 30 minutes",
+      "description": "Number of price pairs with no prices reported in 15 minutes",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1028,7 +1028,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (status) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[30m]) == 0)",
+          "expr": "count by (status) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[15m]) == 0)",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -1590,7 +1590,8 @@
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
-              "type": "linear"
+              "log": 10,
+              "type": "log"
             },
             "showPoints": "auto",
             "spanNulls": false,
@@ -1770,7 +1771,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Price Feeds with no data in 30 minutes",
+      "description": "Price Feeds with no data in 15 minutes",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1843,7 +1844,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (provider,id) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[30m])) == 0",
+          "expr": "sum by (provider,id) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[15m])) == 0",
           "format": "table",
           "instant": true,
           "legendFormat": "__auto",
@@ -2059,7 +2060,7 @@
       "id": 49,
       "options": {
         "colorMode": "background_solid",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
@@ -2082,14 +2083,14 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (provider) (increase(side_car_api_http_status_code{job=\"${job}\",status_code=\"2XX\"}[$__range])) / sum by (provider) (increase(side_car_api_http_status_code{job=\"${job}\"}[$__range]))",
+          "expr": "sum by (provider) (increase(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[$__range])) / sum by (provider) (increase(side_car_provider_status_responses_per_id{job=\"${job}\"}[$__range]))",
           "instant": true,
           "legendFormat": "{{provider}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Data Provider HTTP 2XX % in Range",
+      "title": "Data Provider Success % in Range",
       "type": "stat"
     },
     {
@@ -2111,7 +2112,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 31,
+            "fillOpacity": 5,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -2150,85 +2151,9 @@
               }
             ]
           },
-          "unit": "locale"
+          "unit": "percentunit"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*1.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*2.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*3.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*4.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/.*5.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -2253,7 +2178,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "targets": [
@@ -2263,14 +2188,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(side_car_api_http_status_code{job=\"${job}\",provider=~\"${provider}\"}[$__rate_interval])) by (status_code,provider)",
+          "expr": "sum by (provider) (increase(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[$__range])) / sum by (provider) (increase(side_car_provider_status_responses_per_id{job=\"${job}\"}[$__range]))",
           "instant": false,
-          "legendFormat": "{{provider}} - {{status_code}}",
+          "legendFormat": "{{provider}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Data Provider HTTP Status Code / sec - Filter Above",
+      "title": "Data Provider Success % - Filter Above",
       "type": "timeseries"
     },
     {
@@ -3310,7 +3235,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(side_car_provider_price{job=~\"$job\"},provider)",
+        "definition": "label_values(side_car_health_check_provider_updates_total{job=~\"$job\"},provider)",
         "hide": 0,
         "includeAll": true,
         "label": "Data Provider",
@@ -3319,7 +3244,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(side_car_provider_price{job=~\"$job\"},provider)",
+          "query": "label_values(side_car_health_check_provider_updates_total{job=~\"$job\"},provider)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
@@ -3356,7 +3281,7 @@
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -3370,6 +3295,6 @@
   "timezone": "",
   "title": "Slinky Oracle Dashboard",
   "uid": "cdca49ue665moc",
-  "version": 125,
+  "version": 130,
   "weekStart": ""
 }
