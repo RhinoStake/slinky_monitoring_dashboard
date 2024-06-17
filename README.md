@@ -2,7 +2,8 @@
 
 This is a work-in-progress Grafana dashboard for monitoring the [Slinky Oracle](https://github.com/skip-mev/slinky). Setting up Prometheus/Grafana is outside the scope of this repo. Use the [excellent guide from Artifact Staking](https://artifact-staking.medium.com/setting-up-validator-monitoring-for-aptos-testnet-2-85d5c4e94c80).
 
-![slinky monitoring dashboard](https://snapshots.rhinostake.com/dropshare/nomograph-pericardiac-fers-thunderfishes.png)
+Example of the dYdX dashboard:
+![slinky monitoring dashboard](https://snapshots.rhinostake.com/dropshare/militarism-unregeneracy-unworkably-presuffer.png)
 
 ## A few assumptions and instructions for setup:
 
