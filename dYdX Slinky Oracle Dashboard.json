@@ -12,12 +12,6 @@
   "__elements": {},
   "__requires": [
     {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
@@ -99,9 +93,22 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "text",
+            "mode": "fixed"
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "orange",
+                  "index": 0,
+                  "text": "No Data"
+                }
+              },
+              "type": "special"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -123,9 +130,9 @@
       },
       "id": 27,
       "options": {
-        "colorMode": "none",
+        "colorMode": "value",
         "graphMode": "area",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -148,7 +155,7 @@
           "editorMode": "code",
           "expr": "cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}",
           "instant": false,
-          "legendFormat": "Height",
+          "legendFormat": "{{ instance }}",
           "range": true,
           "refId": "A"
         }
@@ -167,7 +174,19 @@
             "mode": "thresholds"
           },
           "decimals": 2,
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "orange",
+                  "index": 0,
+                  "text": "No Data or Stalled"
+                }
+              },
+              "type": "special"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -212,7 +231,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m])",
+          "expr": "max(rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m]))",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -233,7 +252,19 @@
             "mode": "thresholds"
           },
           "decimals": 1,
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "orange",
+                  "index": 0,
+                  "text": "No data or stalled"
+                }
+              },
+              "type": "special"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -278,7 +309,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "1 / (rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m]))",
+          "expr": "max(1 / (rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[5m])))",
           "instant": false,
           "legendFormat": "Height",
           "range": true,
@@ -346,7 +377,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "cometbft_consensus_num_txs{job=\"${job}\"}",
+          "expr": "max(cometbft_consensus_num_txs{job=\"${job}\"})",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -415,7 +446,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(cometbft_consensus_num_txs{job=\"${job}\"}[5m])",
+          "expr": "max(rate(cometbft_consensus_num_txs{job=\"${job}\"}[5m]))",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -497,7 +528,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "cometbft_consensus_validator_power{job=\"${job}\"}",
+          "expr": "max(cometbft_consensus_validator_power{job=\"${job}\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Voting Power",
@@ -549,7 +580,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Value"
+              "options": "cometbft_blocksync_syncing"
             },
             "properties": [
               {
@@ -623,12 +654,12 @@
           "expr": "cometbft_blocksync_syncing{job=\"${job}\",chain_id=\"${chain_id}\"}",
           "instant": true,
           "interval": "",
-          "legendFormat": "__auto",
+          "legendFormat": "{{instance}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "State",
+      "title": "Node State",
       "type": "stat"
     },
     {
@@ -636,82 +667,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Successful app oracle responses as a percent of total in range",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "#EAB839",
-                "value": 0.9
-              },
-              {
-                "color": "green",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 0,
-        "y": 4
-      },
-      "id": 36,
-      "options": {
-        "colorMode": "background_solid",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "(increase(app_oracle_responses{job=\"${job}\",status=\"Success\"}[$__range])) / (increase(app_oracle_responses{job=\"${job}\"}[$__range]))",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "{{status}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "On-Chain Success % in Range",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Number of ticker pairs your node is failing with no prices reported in 15 minutes",
+      "description": "Number of ticker pairs without an update in 1 hour.  This may not be an issue, but price changes haven't deviated enough for an update.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -724,7 +680,7 @@
                 "result": {
                   "color": "green",
                   "index": 0,
-                  "text": "ALL REPORTING"
+                  "text": "ALL REPORTED"
                 }
               },
               "type": "special"
@@ -743,11 +699,11 @@
               },
               {
                 "color": "orange",
-                "value": 2
+                "value": 5
               },
               {
                 "color": "red",
-                "value": 5
+                "value": 15
               }
             ]
           }
@@ -756,15 +712,15 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 4,
+        "w": 6,
+        "x": 0,
         "y": 4
       },
       "id": 104,
       "options": {
         "colorMode": "background_solid",
         "graphMode": "area",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -786,14 +742,56 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (status) (rate(app_report_status_per_validator{job=\"${job}\",status=\"with_price\"}[15m]) == 0) ",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[15m]) == 0)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "15m",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[1h]) == 0)",
+          "instant": false,
+          "legendFormat": "1h",
+          "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[3h]) == 0)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "3h",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count(changes(prices_current_market_prices{job=\"${job}\",instance=\"${instance}\"}[6h]) == 0)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "6h",
+          "range": true,
+          "refId": "D"
         }
       ],
-      "title": "Tickers Failing",
+      "title": "Tickers With No Updates in...",
       "type": "stat"
     },
     {
@@ -801,7 +799,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Total number of Tickers reported on-chain",
+      "description": "Total number of Price Pairs reported from SideCar",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -837,8 +835,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 8,
+        "w": 4,
+        "x": 6,
         "y": 4
       },
       "id": 40,
@@ -867,14 +865,14 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (ticker) (app_prices{job=\"${job}\",chain_id=\"${chain_id}\"})",
-          "instant": true,
+          "expr": "sum(pricefeed_server_valid_prices_count{job=\"${job}\",instance=\"${instance}\"})",
+          "instant": false,
           "legendFormat": "__auto",
-          "range": false,
+          "range": true,
           "refId": "A"
         }
       ],
-      "title": "Tickers Reported to Chain",
+      "title": "Price Pairs Reported From SideCar",
       "type": "stat"
     },
     {
@@ -909,15 +907,15 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 11,
+        "w": 4,
+        "x": 10,
         "y": 4
       },
       "id": 37,
       "options": {
         "colorMode": "background_solid",
         "graphMode": "area",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -938,9 +936,9 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(app_oracle_responses{job=\"${job}\",chain_id=\"${chain_id}\"}[1m])",
+          "expr": "rate(app_oracle_responses{job=\"${job}\",chain_id=\"${chain_id}\",status=\"Success\"}[1m])",
           "instant": false,
-          "legendFormat": "Height",
+          "legendFormat": "{{instance}}",
           "range": true,
           "refId": "A"
         }
@@ -953,7 +951,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Number of price pairs with no prices reported in 30 minutes",
+      "description": "Total ",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -965,7 +963,7 @@
                 "match": "null",
                 "result": {
                   "color": "green",
-                  "index": 1,
+                  "index": 0,
                   "text": "ALL REPORTING"
                 }
               },
@@ -976,23 +974,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "orange",
-                "value": 5
-              },
-              {
                 "color": "red",
-                "value": 9
+                "value": null
               }
             ]
-          }
+          },
+          "unit": "locale"
         },
         "overrides": []
       },
@@ -1002,7 +989,7 @@
         "x": 14,
         "y": 4
       },
-      "id": 72,
+      "id": 36,
       "options": {
         "colorMode": "background_solid",
         "graphMode": "area",
@@ -1027,15 +1014,15 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "exemplar": false,
-          "expr": "count by (status) (rate(side_car_provider_status_responses_per_id{job=\"${job}\",status=\"success\"}[30m]) == 0)",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
+          "expr": "count(rate(pricefeed_server_update_price_valid_count{job=\"${job}\"}[15m]) == 0)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{status}}",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Side Car Price Pairs Failing",
+      "title": "Number of Failing Sidecar Pairs",
       "type": "stat"
     },
     {
@@ -1096,7 +1083,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "cometbft_consensus_validators_power{job=\"${job}\"}",
+          "expr": "max(cometbft_consensus_validators_power{job=\"${job}\"})",
           "interval": "",
           "legendFormat": "",
           "range": true,
@@ -1178,7 +1165,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\"}[1h]))   ",
+          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\",instance=\"${instance}\"}[1h]))",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -1192,7 +1179,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\"}[24h]))",
+          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\",instance=\"${instance}\"}[24h]))",
           "instant": false,
           "interval": "",
           "legendFormat": "1 Day",
@@ -1205,7 +1192,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\"}[7d]))   ",
+          "expr": "sum(increase(cometbft_consensus_validator_missed_blocks{job=\"${job}\",instance=\"${instance}\"}[7d]))",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -1234,7 +1221,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Reported prices on-chain.  Prices changes only reported when % deviation is met, so graph will be incomplete",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1248,7 +1235,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 36,
+            "fillOpacity": 2,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -1260,10 +1247,11 @@
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
-              "type": "linear"
+              "log": 2,
+              "type": "log"
             },
             "showPoints": "auto",
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -1297,7 +1285,7 @@
         "x": 0,
         "y": 9
       },
-      "id": 41,
+      "id": 129,
       "options": {
         "legend": {
           "calcs": [
@@ -1308,10 +1296,12 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -1322,14 +1312,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "app_prices{job=~\"${job}\",chain_id=\"${chain_id}\",ticker=\"${ticker}\"} / 10^18",
+          "expr": "prices_current_market_prices{job=\"${job}\",instance=\"${instance}\",market_id=~\"${ticker}\"}",
           "instant": false,
-          "legendFormat": "{{ticker}}",
+          "legendFormat": "{{market_id}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "On-Chain Price by Ticker (USD)  - Filter Above",
+      "title": "On-Chain Price by Reported Ticker (USD)  - Filter Above",
       "type": "timeseries"
     },
     {
@@ -1337,67 +1327,59 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Success of submitting price for ticker per block time",
+      "description": "Last Price Reports and",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 2,
-          "displayName": "${ticker}",
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": false
+          },
           "fieldMinMax": false,
           "mappings": [],
-          "max": 1,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               }
             ]
           },
-          "unit": "percentunit"
+          "unit": "locale"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/^with_price.*/"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 12,
-        "w": 13,
+        "h": 11,
+        "w": 7,
         "x": 0,
         "y": 19
       },
-      "id": 88,
+      "id": 138,
       "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": [],
+          "reducer": [
+            "sum"
           ],
-          "fields": "",
-          "values": false
+          "show": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Blocks Since Last update"
+          }
+        ]
       },
       "pluginVersion": "10.4.2",
       "targets": [
@@ -1407,22 +1389,66 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(rate(app_report_status_per_validator{job=~\"${job}\",chain_id=\"${chain_id}\",ticker=\"${ticker}\",validator=\"${valscon}\"}[15m])) / on(chain_id) group_right(status,ticker) (rate(cometbft_consensus_latest_block_height{job=\"${job}\",chain_id=\"${chain_id}\"}[15m]))",
-          "instant": false,
-          "legendFormat": "{{status}} - {{ticker}}",
-          "range": true,
+          "exemplar": false,
+          "expr": "cometbft_consensus_latest_block_height{job=\"${job}\",instance=\"${instance}\"} - on (job) group_right last_over_time(prices_last_price_update_for_market_block{job=\"${job}\",instance=\"${instance}\"}[1d])",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
           "refId": "A"
         }
       ],
-      "title": "App Report Status for ${valscon}",
-      "type": "gauge"
+      "title": "Latest Price Pair Reports by instance",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "BlockHeight": true,
+              "Time": true,
+              "Value": false,
+              "Value #A": false,
+              "Value #B": true,
+              "__name__": true,
+              "__name__ 1": true,
+              "__name__ 2": true,
+              "blockheight": true,
+              "chain_id": true,
+              "client": true,
+              "client 1": true,
+              "client 2": true,
+              "instance": true,
+              "instance 1": true,
+              "instance 2": true,
+              "job": true,
+              "job 1": true,
+              "job 2": true,
+              "market_id": false
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "BlocksSinceUpdate": "Blocks Since Last Update",
+              "Time": "",
+              "Value": "Blocks Since Last update",
+              "Value #A": "Last Update Block",
+              "Value #B": "",
+              "id": "Side Car Price Pair",
+              "market_id": "Price Pair",
+              "provider": "Provider"
+            }
+          }
+        }
+      ],
+      "type": "table"
     },
     {
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Your validator address is bolded",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1436,8 +1462,8 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 36,
-            "gradientMode": "opacity",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -1460,7 +1486,6 @@
               "mode": "off"
             }
           },
-          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1475,39 +1500,21 @@
               }
             ]
           },
-          "unit": "currencyUSD"
+          "unit": "s"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "B"
-            },
-            "properties": [
-              {
-                "id": "custom.lineWidth",
-                "value": 3
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 12,
-        "w": 11,
-        "x": 13,
+        "h": 5,
+        "w": 9,
+        "x": 7,
         "y": 19
       },
-      "id": 120,
+      "id": 156,
       "options": {
         "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1523,27 +1530,203 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "app_reports_per_validator{job=\"${job}\",chain_id=\"${chain_id}\",ticker=~\"${ticker}\",validator!=\"${valscon}\"} / 10^18",
+          "expr": "rate(update_market_prices_latency_sum{job=\"${job}\"}[$__rate_interval])",
           "instant": false,
-          "legendFormat": "{{validator}} - {{ticker}}",
+          "legendFormat": "Price Latency - {{ instance }}",
           "range": true,
-          "refId": "AllVals"
+          "refId": "A"
+        }
+      ],
+      "title": "Time to Update Market Prices",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
         },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 8,
+        "x": 16,
+        "y": 19
+      },
+      "id": 147,
+      "options": {
+        "calculate": true,
+        "calculation": {
+          "xBuckets": {
+            "mode": "size"
+          },
+          "yBuckets": {
+            "scale": {
+              "type": "linear"
+            }
+          }
+        },
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "Oranges",
+          "steps": 64
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "auto"
+        },
+        "tooltip": {
+          "mode": "single",
+          "showColorScale": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false,
+          "unit": "ms"
+        }
+      },
+      "pluginVersion": "10.4.2",
+      "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "app_reports_per_validator{job=\"${job}\",chain_id=\"${chain_id}\",ticker=~\"${ticker}\",validator=\"${valscon}\"} / 10^18",
-          "hide": false,
+          "expr": "sum(rate(app_abci_method_latency_bucket{abci_method=\"verify_vote_extension\",job=~\"${job}\",chain_id=\"${chain_id}\",instance=\"${instance}\"}[$__rate_interval])) by (le)",
           "instant": false,
-          "legendFormat": "{{validator}} - {{ticker}}",
+          "legendFormat": "__auto",
           "range": true,
-          "refId": "YourValidator"
+          "refId": "A"
         }
       ],
-      "title": "Validator Reported Prices for Ticker vs all Vals - filter by Reported Ticker and Val Address",
+      "title": "Vote Extension Latency (s) by instance",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 7,
+        "y": 24
+      },
+      "id": 165,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "rate(app_abci_method_latency_sum{abci_method=\"verify_vote_extension\",job=\"${job}\"}[$__rate_interval])",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Vote Extension Latency - {{ instance }}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Vote Extension Latency",
       "type": "timeseries"
     },
     {
@@ -1552,7 +1735,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 30
       },
       "id": 44,
       "panels": [],
@@ -1590,7 +1773,7 @@
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
-              "log": 10,
+              "log": 2,
               "type": "log"
             },
             "showPoints": "auto",
@@ -1625,7 +1808,7 @@
         "h": 11,
         "w": 18,
         "x": 0,
-        "y": 32
+        "y": 31
       },
       "id": 45,
       "options": {
@@ -1638,7 +1821,9 @@
           ],
           "displayMode": "table",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
@@ -1668,6 +1853,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Latency between validator node and sidecar",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1687,7 +1873,7 @@
         "h": 11,
         "w": 6,
         "x": 18,
-        "y": 32
+        "y": 31
       },
       "id": 38,
       "options": {
@@ -1743,14 +1929,14 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(app_oracle_response_latency_bucket{job=~\"${job}\",chain_id=\"${chain_id}\"}[$__rate_interval])) by (le)",
+          "expr": "sum(rate(app_oracle_response_latency_bucket{job=~\"${job}\",chain_id=\"${chain_id}\",instance=\"${instance}\"}[$__rate_interval])) by (le)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Side Car Latency to Blockchain (s)",
+      "title": "Side Car Latency to Blockchain (s) by instance",
       "type": "heatmap"
     },
     {
@@ -1759,7 +1945,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 42
       },
       "id": 47,
       "panels": [],
@@ -1801,7 +1987,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               }
             ]
           },
@@ -1813,7 +2000,7 @@
         "h": 11,
         "w": 7,
         "x": 0,
-        "y": 44
+        "y": 43
       },
       "id": 52,
       "options": {
@@ -1903,7 +2090,8 @@
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
-              "type": "linear"
+              "log": 2,
+              "type": "log"
             },
             "showPoints": "auto",
             "spanNulls": false,
@@ -1921,7 +2109,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               },
               {
                 "color": "orange",
@@ -1961,7 +2150,7 @@
         "h": 11,
         "w": 17,
         "x": 7,
-        "y": 44
+        "y": 43
       },
       "id": 48,
       "options": {
@@ -2032,7 +2221,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               },
               {
                 "color": "orange",
@@ -2052,7 +2242,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 55
+        "y": 54
       },
       "id": 49,
       "options": {
@@ -2139,7 +2329,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2155,7 +2346,7 @@
         "h": 8,
         "w": 18,
         "x": 6,
-        "y": 55
+        "y": 54
       },
       "id": 46,
       "options": {
@@ -2170,7 +2361,7 @@
           "placement": "right",
           "showLegend": true,
           "sortBy": "Last *",
-          "sortDesc": true
+          "sortDesc": false
         },
         "tooltip": {
           "mode": "multi",
@@ -2200,7 +2391,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 62
       },
       "id": 25,
       "panels": [],
@@ -2256,7 +2447,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2272,7 +2464,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 64
+        "y": 63
       },
       "id": 26,
       "options": {
@@ -2358,7 +2550,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2374,7 +2567,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 64
+        "y": 63
       },
       "id": 39,
       "options": {
@@ -2458,7 +2651,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2474,7 +2668,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 71
+        "y": 70
       },
       "id": 14,
       "options": {
@@ -2560,7 +2754,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2576,7 +2771,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 71
+        "y": 70
       },
       "id": 35,
       "options": {
@@ -2660,7 +2855,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2675,7 +2871,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 79
+        "y": 78
       },
       "id": 11,
       "options": {
@@ -2754,7 +2950,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2769,7 +2966,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 79
+        "y": 78
       },
       "id": 17,
       "options": {
@@ -2849,7 +3046,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2865,7 +3063,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 84
+        "y": 83
       },
       "id": 15,
       "options": {
@@ -2944,7 +3142,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2960,7 +3159,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 85
+        "y": 84
       },
       "id": 16,
       "options": {
@@ -2998,7 +3197,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 92
+        "y": 91
       },
       "id": 55,
       "panels": [],
@@ -3056,7 +3255,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3072,7 +3272,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 93
+        "y": 92
       },
       "id": 56,
       "maxPerRow": 2,
@@ -3191,7 +3391,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(app_prices{chain_id=\"$chain_id\"},ticker)",
+        "definition": "label_values(pricefeed_server_valid_prices_count{job=\"$job\"},market_id)",
         "hide": 0,
         "includeAll": true,
         "label": "Reported Ticker",
@@ -3200,7 +3400,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(app_prices{chain_id=\"$chain_id\"},ticker)",
+          "query": "label_values(pricefeed_server_valid_prices_count{job=\"$job\"},market_id)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
@@ -3282,6 +3482,41 @@
         "skipUrlSync": false,
         "sort": 2,
         "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(cometbft_consensus_height{job=\"$job\"},instance)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Instance",
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(cometbft_consensus_height{job=\"$job\"},instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "VZT5-Dv7z"
+        },
+        "filters": [],
+        "hide": 0,
+        "name": "Filters",
+        "skipUrlSync": false,
+        "type": "adhoc"
       }
     ]
   },
@@ -3298,8 +3533,8 @@
     ]
   },
   "timezone": "",
-  "title": "Slinky Oracle Dashboard",
-  "uid": "cdca49ue665moc",
-  "version": 131,
+  "title": "Slinky dYdX Oracle Dashboard",
+  "uid": "ddlptcu54ga9se",
+  "version": 24,
   "weekStart": ""
 }
